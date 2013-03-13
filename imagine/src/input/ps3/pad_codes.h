@@ -1,0 +1,44 @@
+#pragma once
+
+typedef enum CellPadButtonDataOffset{
+    CELL_PAD_BTN_OFFSET_DIGITAL1 = 2,
+    CELL_PAD_BTN_OFFSET_DIGITAL2 = 3,
+    CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_X = 4,
+    CELL_PAD_BTN_OFFSET_ANALOG_RIGHT_Y = 5,
+    CELL_PAD_BTN_OFFSET_ANALOG_LEFT_X  = 6,
+    CELL_PAD_BTN_OFFSET_ANALOG_LEFT_Y  = 7,
+    CELL_PAD_BTN_OFFSET_PRESS_RIGHT    = 8,
+    CELL_PAD_BTN_OFFSET_PRESS_LEFT     = 9,
+    CELL_PAD_BTN_OFFSET_PRESS_UP       = 10,
+    CELL_PAD_BTN_OFFSET_PRESS_DOWN     = 11,
+    CELL_PAD_BTN_OFFSET_PRESS_TRIANGLE = 12,
+    CELL_PAD_BTN_OFFSET_PRESS_CIRCLE   = 13,
+    CELL_PAD_BTN_OFFSET_PRESS_CROSS    = 14,
+    CELL_PAD_BTN_OFFSET_PRESS_SQUARE   = 15,
+    CELL_PAD_BTN_OFFSET_PRESS_L1       = 16,
+    CELL_PAD_BTN_OFFSET_PRESS_R1       = 17,
+    CELL_PAD_BTN_OFFSET_PRESS_L2       = 18,
+    CELL_PAD_BTN_OFFSET_PRESS_R2       = 19,
+    CELL_PAD_BTN_OFFSET_SENSOR_X       = 20,
+    CELL_PAD_BTN_OFFSET_SENSOR_Y       = 21,
+    CELL_PAD_BTN_OFFSET_SENSOR_Z       = 22,
+    CELL_PAD_BTN_OFFSET_SENSOR_G       = 23
+} CellPadButtonDataOffset;
+
+#define CELL_PAD_CTRL_LEFT      (1 << 7)
+#define CELL_PAD_CTRL_DOWN      (1 << 6)
+#define CELL_PAD_CTRL_RIGHT     (1 << 5)
+#define CELL_PAD_CTRL_UP        (1 << 4)
+#define CELL_PAD_CTRL_START     (1 << 3)
+#define CELL_PAD_CTRL_R3        (1 << 2)
+#define CELL_PAD_CTRL_L3        (1 << 1)
+#define CELL_PAD_CTRL_SELECT    (1 << 0)
+
+#define CELL_PAD_CTRL_SQUARE    (1 << 7)
+#define CELL_PAD_CTRL_CROSS     (1 << 6)
+#define CELL_PAD_CTRL_CIRCLE    (1 << 5)
+#define CELL_PAD_CTRL_TRIANGLE  (1 << 4)
+#define CELL_PAD_CTRL_R1        (1 << 3)
+#define CELL_PAD_CTRL_L1        (1 << 2)
+#define CELL_PAD_CTRL_R2        (1 << 1)
+#define CELL_PAD_CTRL_L2        (1 << 0)
