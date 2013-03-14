@@ -32,8 +32,7 @@ public:
 private:
 	BluetoothSocketSys ctlSock, intSock;
 	Input::Device *device = nullptr;
-	uchar inputBuffer[6] = {0};
-	uint inputBufferPos = 0;
+	uchar prevBtnData[3] = {0};
 	uint player = 0;
 
 	BluetoothAddr addr;

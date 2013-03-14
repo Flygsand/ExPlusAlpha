@@ -18,6 +18,7 @@
 #include "Wiimote.hh"
 #include "Zeemote.hh"
 #include "IControlPad.hh"
+#include "PS3Pad.hh"
 #include <util/collection/DLList.hh>
 
 StaticDLList<BluetoothInputDevice*, Input::MAX_BLUETOOTH_DEVS_PER_TYPE * 2> btInputDevList;
@@ -33,7 +34,8 @@ namespace Bluetooth
 	{
 		return Wiimote::isSupportedClass(devClass) ||
 				IControlPad::isSupportedClass(devClass) ||
-				Zeemote::isSupportedClass(devClass);
+				Zeemote::isSupportedClass(devClass) ||
+				PS3Pad::isSupportedClass(devClass);
 	}
 
 	bool onClass(const uchar devClass[3])
@@ -68,6 +70,16 @@ namespace Bluetooth
 		else if(strstr(name, "Zeemote JS1"))
 		{
 			Zeemote *dev = new Zeemote(addr);
+			if(!dev)
+			{
+				logErr("out of memory");
+				return;
+			}
+			btInputDevPendingList.add(dev);
+		}
+		else if(strstr(name, "PLAYSTATION3(R) Controller"))
+		{
+			PS3Pad *dev = new PS3Pad(addr);
 			if(!dev)
 			{
 				logErr("out of memory");

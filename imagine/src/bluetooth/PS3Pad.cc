@@ -22,6 +22,8 @@
 #include <util/bits.h>
 #include <util/collection/DLList.hh>
 
+const uchar PS3Pad::btClass[3] = { 0x04, 0x25, 0x00 };
+
 extern StaticDLList<BluetoothInputDevice*, Input::MAX_BLUETOOTH_DEVS_PER_TYPE * 2> btInputDevList;
 StaticDLList<PS3Pad*, Input::MAX_BLUETOOTH_DEVS_PER_TYPE> PS3Pad::devList;
 
@@ -93,9 +95,8 @@ void PS3Pad::removeFromSystem()
 	devList.remove(this);
 	if(btInputDevList.remove(this))
 	{
-		/* TODO: Implement for PS3Pad
-		Input::removeDevice((Input::Device){player, Input::Event::MAP_ICONTROLPAD, Input::Device::TYPE_BIT_GAMEPAD, "iControlPad"});
-		Input::onInputDevChange((Input::DeviceChange){ player, Input::Event::MAP_ICONTROLPAD, Input::DeviceChange::REMOVED }); */
+		Input::removeDevice((Input::Device){player, Input::Event::MAP_PS3PAD, Input::Device::TYPE_BIT_GAMEPAD, "DualShock/Sixaxis"});
+		Input::onInputDevChange((Input::DeviceChange){ player, Input::Event::MAP_PS3PAD, Input::DeviceChange::REMOVED });
 	}
 }
 
@@ -104,7 +105,7 @@ void PS3Pad::setOperational(void)
 
 	const uchar msg[] = {
 		0x53 /*HIDP_TRANS_SET_REPORT | HIDP_DATA_RTYPE_FEATURE*/,
-		0xf4,  0x42, 0x03, 0x00, 0x00
+		0xf4, 0x42, 0x03, 0x00, 0x00
 	};
 
 	ctlSock.write(msg, sizeof(msg));
@@ -194,73 +195,40 @@ uchar PS3Pad::playerLEDs(int player)
 
 bool PS3Pad::dataHandler(const uchar *packet, size_t size)
 {
-	uint bytesLeft = size;
-	/* 
-	TODO: Implement for PS3Pad
-
-	//logMsg("%d bytes ready", bytesToRead);
-	do
+	if (size < 49)
 	{
-		if(function != FUNC_NONE)
-		{
-			if(packet[size-bytesLeft] != RESP_OKAY)
-			{
-				logErr("error: iCP didn't respond with OK");
-				removeFromSystem();
-				delete this;
-				return 0;
-			}
-			logMsg("got OK reply");
-			if(function == FUNC_SET_LED_MODE)
-			{
-				logMsg("turning on GP_REPORTS");
-				sock.write(turnOnReports, sizeof turnOnReports);
-				function = FUNC_GP_REPORTS;
-				return 1;
-			}
-			function = FUNC_NONE;
-			bytesLeft--;
-		}
-		else // handle GP_REPORT
-		{
-			uint processBytes = IG::min(bytesLeft, uint(sizeof inputBuffer - inputBufferPos));
-			memcpy(&inputBuffer[inputBufferPos], &packet[size-bytesLeft], processBytes);
-			//logDMsg("read %d bytes from iCP", len);
-			inputBufferPos += processBytes;
-			assert(inputBufferPos <= 6);
+		logWarn("packet size too small");
+	}
+	else if (packet[0] != 0xa1)
+	{
+		logWarn("Unknown report header in packet");
+	}
+	else if (packet[1] != 0x01)
+	{
+		logWarn("Unknown report ID in packet");
+	}
+	else
+	{
+		processBtnReport(&packet[3], player);
+	}
 
-			// check if inputBuffer is complete
-			if(inputBufferPos == 6)
-			{
-				processNubDataForButtonEmulation((schar*)inputBuffer, player);
-				processBtnReport(&inputBuffer[4], player);
-				inputBufferPos = 0;
-			}
-			bytesLeft -= processBytes;
-		}
-	} while(bytesLeft);
-
-	//logDMsg("done reading iCP");
-	*/
 	return 1;
 }
 
 void PS3Pad::processBtnReport(const uchar *btnData, uint player)
 {
 	using namespace Input;
-	/*
-	TODO: Implement for PS3Pad
 
-	forEachInArray(iCPDataAccess, e)
+	forEachInArray(ps3padDataAccess, e)
 	{
-		bool oldState = prevBtnData[e->byteOffset] & e->mask,
-			newState = btnData[e->byteOffset] & e->mask;
-		if(oldState != newState)
+		int newState = e->updateState(prevBtnData, btnData);
+		if(newState != -1)
 		{
-			//logMsg("%s %s @ iCP", e->name, newState ? "pushed" : "released");
-			onInputEvent(Event(player, Event::MAP_ICONTROLPAD, e->keyEvent, newState ? PUSHED : RELEASED, 0, device));
+			logMsg("%s %s @ ps3pad %d", buttonName(Event::MAP_PS3PAD, e->keyEvent), newState ? "pushed" : "released", player);
+			onInputEvent(Event(player, Event::MAP_PS3PAD, e->keyEvent, newState ? PUSHED : RELEASED, 0, device));
 		}
 	}
+
 	memcpy(prevBtnData, btnData, sizeof(prevBtnData));
-	*/
+	
 }
